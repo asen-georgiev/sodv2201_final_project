@@ -1,0 +1,50 @@
+[
+  {
+    "id": "order-1",
+    "userId": "user-1",
+    "items": [
+      {
+        "menuItemId": "dish-2",
+        "name": "Chicken Alfredo",
+        "price": 18.99,
+        "quantity": 1
+      },
+      {
+        "menuItemId": "dish-4",
+        "name": "Chocolate lava cake",
+        "price": 8.5,
+        "quantity": 1
+      }
+    ],
+    "fulfillmentType": "pickup",
+    "deliveryAddress": "",
+    "notes": "",
+    "total": 27.49,
+    "status": "pending",
+    "createdAt": "2026-10-30T18:10:00-06:00"
+  },
+  {
+    "id": "order-2",
+    "userId": "user-2",
+    "items": [
+      {
+        "menuItemId": "dish-3",
+        "name": "Margherita pizza",
+        "price": 17.5,
+        "quantity": 2
+      },
+      {
+        "menuItemId": "dish-6",
+        "name": "House lemonade",
+        "price": 5.5,
+        "quantity": 2
+      }
+    ],
+    "fulfillmentType": "delivery",
+    "deliveryAddress": "123 Example Street, Calgary, AB",
+    "notes": "Please ring the doorbell.",
+    "total": 46,
+    "status": "finished",
+    "createdAt": "2026-10-29T19:00:00-06:00"
+  }
+]

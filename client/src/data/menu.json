@@ -1,0 +1,108 @@
+[
+  {
+    "id": "dish-1",
+    "name": "Garden harvest salad",
+    "description": "Crisp greens, cherry tomatoes, feta and lemon dressing.",
+    "price": 14.5,
+    "imageUrl": "/images/dishes/garden-harvest-salad.svg",
+    "category": "starters",
+    "ingredients": [
+      "Mixed greens",
+      "Cherry tomatoes",
+      "Feta",
+      "Lemon",
+      "Olive oil"
+    ],
+    "dietaryOptions": ["vegetarian", "gluten-free"],
+    "isAvailable": true,
+    "isPopular": true
+  },
+  {
+    "id": "dish-2",
+    "name": "Chicken Alfredo",
+    "description": "Creamy parmesan sauce, grilled chicken and fresh herbs.",
+    "price": 18.99,
+    "imageUrl": "/images/dishes/chicken-alfredo.svg",
+    "category": "mains",
+    "ingredients": [
+      "Wheat pasta",
+      "Chicken",
+      "Cream",
+      "Parmesan",
+      "Fresh herbs"
+    ],
+    "dietaryOptions": [],
+    "isAvailable": true,
+    "isPopular": true
+  },
+  {
+    "id": "dish-3",
+    "name": "Margherita pizza",
+    "description": "Tomato, fresh mozzarella and fragrant basil.",
+    "price": 17.5,
+    "imageUrl": "/images/dishes/margherita-pizza.svg",
+    "category": "mains",
+    "ingredients": [
+      "Wheat dough",
+      "Tomato sauce",
+      "Mozzarella",
+      "Basil",
+      "Olive oil"
+    ],
+    "dietaryOptions": ["vegetarian"],
+    "isAvailable": true,
+    "isPopular": true
+  },
+  {
+    "id": "dish-4",
+    "name": "Chocolate lava cake",
+    "description": "Warm chocolate cake with a soft, rich center.",
+    "price": 8.5,
+    "imageUrl": "/images/dishes/chocolate-lava-cake.svg",
+    "category": "desserts",
+    "ingredients": [
+      "Chocolate",
+      "Wheat flour",
+      "Butter",
+      "Eggs",
+      "Sugar"
+    ],
+    "dietaryOptions": ["vegetarian"],
+    "isAvailable": true,
+    "isPopular": false
+  },
+  {
+    "id": "dish-5",
+    "name": "Vegetable pasta",
+    "description": "Seasonal vegetables, tomato sauce and fresh basil.",
+    "price": 16.5,
+    "imageUrl": "/images/dishes/vegetable-pasta.svg",
+    "category": "mains",
+    "ingredients": [
+      "Wheat pasta",
+      "Zucchini",
+      "Bell pepper",
+      "Tomato sauce",
+      "Basil"
+    ],
+    "dietaryOptions": ["vegetarian"],
+    "isAvailable": false,
+    "isPopular": false
+  },
+  {
+    "id": "dish-6",
+    "name": "House lemonade",
+    "description": "Fresh lemon, a little sweetness and plenty of sunshine.",
+    "price": 5.5,
+    "imageUrl": "/images/dishes/house-lemonade.svg",
+    "category": "beverages",
+    "ingredients": [
+      "Lemon",
+      "Water",
+      "Sugar"
+    ],
+    "dietaryOptions": ["vegetarian", "gluten-free"],
+    "isAvailable": true,
+    "isPopular": false
+  }
+]

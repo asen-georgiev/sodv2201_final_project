@@ -1,0 +1,42 @@
+[
+  {
+    "id": "chat-1",
+    "keywords": ["special", "specials"],
+    "answer": "Today's special is Chicken Alfredo for $18.99."
+  },
+  {
+    "id": "chat-2",
+    "keywords": ["vegetarian", "veggie", "meat-free"],
+    "answer": "Our vegetarian options include Garden harvest salad and Margherita pizza. Chocolate lava cake is also vegetarian. Vegetable pasta is currently unavailable."
+  },
+  {
+    "id": "chat-3",
+    "keywords": ["recommend", "recommendation", "popular"],
+    "answer": "Try one of our popular dishes: Chicken Alfredo, Margherita pizza, or Garden harvest salad."
+  },
+  {
+    "id": "chat-4",
+    "keywords": ["gluten-free", "gluten free", "gluten"],
+    "answer": "Our Garden harvest salad and House lemonade are listed as gluten-free. Please speak with the restaurant team about allergies and preparation."
+  },
+  {
+    "id": "chat-5",
+    "keywords": ["dessert", "cake", "chocolate"],
+    "answer": "Try our Chocolate lava cake for $8.50. It is served warm with a soft, rich center."
+  },
+  {
+    "id": "chat-6",
+    "keywords": ["pickup", "pick up", "delivery"],
+    "answer": "We offer pickup and simulated delivery. Choose your preferred option during checkout."
+  },
+  {
+    "id": "chat-7",
+    "keywords": ["reservation", "reserve", "booking", "book", "table"],
+    "answer": "Visit the Reservations page to choose your date, time, and number of guests."
+  },
+  {
+    "id": "chat-8",
+    "keywords": ["birthday", "corporate", "event", "party"],
+    "answer": "We support special event bookings. Select Special event on the Reservations page and complete the event details."
+  }
+]

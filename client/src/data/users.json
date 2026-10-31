@@ -1,0 +1,26 @@
+[
+  {
+    "id": "user-1",
+    "name": "Alex Morgan",
+    "email": "alex@example.com",
+    "phone": "403-555-0101",
+    "role": "customer",
+    "password": "customer123"
+  },
+  {
+    "id": "user-2",
+    "name": "Sam Rivera",
+    "email": "sam@example.com",
+    "phone": "403-555-0102",
+    "role": "customer",
+    "password": "customer123"
+  },
+  {
+    "id": "user-3",
+    "name": "Jamie Parker",
+    "email": "admin@example.com",
+    "phone": "403-555-0103",
+    "role": "admin",
+    "password": "admin123"
+  }
+]

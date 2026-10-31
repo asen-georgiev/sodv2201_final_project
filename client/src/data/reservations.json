@@ -1,0 +1,41 @@
+[
+  {
+    "id": "reservation-1",
+    "userId": "user-1",
+    "type": "table",
+    "date": "2026-11-06",
+    "time": "18:30",
+    "guests": 2,
+    "phone": "403-555-0101",
+    "notes": "A window seat, if available.",
+    "eventType": null,
+    "menuPreference": "",
+    "status": "pending"
+  },
+  {
+    "id": "reservation-2",
+    "userId": "user-2",
+    "type": "event",
+    "date": "2026-11-07",
+    "time": "19:00",
+    "guests": 6,
+    "phone": "403-555-0102",
+    "notes": "Please bring the birthday dessert after the meal.",
+    "eventType": "birthday",
+    "menuPreference": "Vegetarian selection",
+    "status": "pending"
+  },
+  {
+    "id": "reservation-3",
+    "userId": "user-1",
+    "type": "table",
+    "date": "2026-10-28",
+    "time": "18:00",
+    "guests": 4,
+    "phone": "403-555-0101",
+    "notes": "",
+    "eventType": null,
+    "menuPreference": "",
+    "status": "finished"
+  }
+]
