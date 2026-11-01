@@ -1,15 +1,19 @@
+import { Routes, Route } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
-import Footer from "@/components/Footer.tsx";
+import Footer from '@/components/Footer'
+import AuthPage from '@/pages/AuthPage'
 
 function App() {
     return (
         <div className="flex min-h-screen flex-col bg-stone-50 text-stone-900">
             <Navbar />
-            <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-10">
-                <h1 className="text-3xl font-bold">
-                    Smart Restaurant Management System
-                </h1>
+
+            <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-10">
+                <Routes>
+                    <Route path="/login" element={<AuthPage />} />
+                </Routes>
             </main>
+
             <Footer />
         </div>
     )

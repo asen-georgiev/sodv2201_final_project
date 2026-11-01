@@ -1,5 +1,9 @@
 export type UserRole = 'customer' | 'admin'
 
+export type RegisterResult =
+    | { success: true; user: User }
+    | { success: false; error: string }
+
 export interface User {
     id: string
     name: string

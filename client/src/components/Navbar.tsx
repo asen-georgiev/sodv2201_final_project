@@ -1,7 +1,18 @@
 import { NavLink } from 'react-router-dom'
 import { ShoppingCart } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import useAuth from '@/hooks/useAuth'
+import { Button } from '@/components/ui/button'
 
 function Navbar() {
+    const { currentUser, logout } = useAuth()
+    const navigate = useNavigate()
+
+    function handleLogout() {
+        logout()
+        navigate('/login', { replace: true })
+    }
+
     return (
         <header className="border-b border-stone-200 bg-white">
             <nav
@@ -32,12 +43,23 @@ function Navbar() {
                         <ShoppingCart className="size-5" />
                     </NavLink>
 
-                    <NavLink
-                        to="/login"
-                        className="rounded-lg border border-stone-200 px-4 py-2 text-sm font-medium hover:bg-stone-100"
-                    >
-                        Sign in
-                    </NavLink>
+                    {currentUser ? (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleLogout}
+                            className="border-stone-200 bg-white text-stone-900 hover:bg-stone-100 h-10 px-4 py-0 text-sm font-medium"
+                        >
+                            Log out
+                        </Button>
+                    ) : (
+                        <NavLink
+                            to="/login"
+                            className="inline-flex h-10 items-center justify-center rounded-lg border border-stone-200 bg-white px-4 py-0 text-sm font-medium text-stone-900 hover:bg-stone-100"
+                        >
+                            Sign in
+                        </NavLink>
+                    )}
                 </div>
             </nav>
         </header>
