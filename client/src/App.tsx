@@ -1,22 +1,23 @@
 import { Routes, Route } from 'react-router-dom'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
+import CustomerLayout from '@/layouts/CustomerLayout'
+import AdminLayout from '@/layouts/AdminLayout'
 import AuthPage from '@/pages/AuthPage'
+import { MenuItemsPage } from '@/pages/admin/MenuItemsPage'
 
-function App() {
+export default function App() {
     return (
-        <div className="flex min-h-screen flex-col bg-stone-50 text-stone-900">
-            <Navbar />
+        <Routes>
+            <Route element={<CustomerLayout />}>
+                <Route path="/login" element={<AuthPage />} />
 
-            <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-10">
-                <Routes>
-                    <Route path="/login" element={<AuthPage />} />
-                </Routes>
-            </main>
+                {/* Add other customer routes here */}
+            </Route>
 
-            <Footer />
-        </div>
+            <Route path="/admin" element={<AdminLayout />}>
+                <Route path="menu" element={<MenuItemsPage />} />
+
+                {/* Add other admin routes here */}
+            </Route>
+        </Routes>
     )
 }
-
-export default App
