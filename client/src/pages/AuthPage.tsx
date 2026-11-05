@@ -5,7 +5,7 @@ import {Tabs, TabsContent, TabsList, TabsTrigger,} from '@/components/ui/tabs'
 
 export default function AuthPage() {
     return (
-        <div className="grid flex-1 overflow-hidden rounded-2xl border border-stone-200 md:grid-cols-2">
+        <div className="grid flex-1 overflow-hidden md:grid-cols-2">
             <section className="flex flex-col justify-center bg-emerald-950 p-8 text-white md:p-12">
                 <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-emerald-300">
                     Good to have you here
