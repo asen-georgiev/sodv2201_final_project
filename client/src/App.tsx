@@ -4,12 +4,14 @@ import AdminLayout from '@/layouts/AdminLayout'
 import AuthPage from '@/pages/AuthPage'
 import { MenuItemsPage } from '@/pages/admin/MenuItemsPage'
 import {OrdersPage} from "@/pages/admin/OrdersPage.tsx";
+import ReservationsPage from '@/pages/ReservationsPage'
 
 export default function App() {
     return (
         <Routes>
             <Route element={<CustomerLayout />}>
                 <Route path="/login" element={<AuthPage />} />
+                <Route path="/reservations" element={<ReservationsPage />} />
 
                 {/* Add other customer routes here */}
             </Route>
