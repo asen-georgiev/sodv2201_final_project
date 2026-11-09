@@ -6,12 +6,14 @@ import { MenuItemsPage } from '@/pages/admin/MenuItemsPage'
 import {OrdersPage} from "@/pages/admin/OrdersPage.tsx";
 import {ReservationsPage} from "@/pages/admin/ReservationsPage.tsx";
 import {UsersPage} from "@/pages/admin/UsersPage.tsx";
+import CartPage from "@/pages/CartPage.tsx";
 
 export default function App() {
     return (
         <Routes>
             <Route element={<CustomerLayout />}>
                 <Route path="/login" element={<AuthPage />} />
+                <Route path="/cart" element={<CartPage />} />
 
                 {/* Add other customer routes here */}
             </Route>

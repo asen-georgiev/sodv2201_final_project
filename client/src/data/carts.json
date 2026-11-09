@@ -1,0 +1,22 @@
+{
+  "user-1": [
+    {
+      "menuItemId": "dish-2",
+      "quantity": 1
+    },
+    {
+      "menuItemId": "dish-4",
+      "quantity": 1
+    }
+  ],
+  "user-2": [
+    {
+      "menuItemId": "dish-3",
+      "quantity": 1
+    },
+    {
+      "menuItemId": "dish-6",
+      "quantity": 2
+    }
+  ]
+}
