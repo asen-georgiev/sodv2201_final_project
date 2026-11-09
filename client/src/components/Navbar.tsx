@@ -1,16 +1,23 @@
-import { NavLink } from 'react-router-dom'
-import { ShoppingCart } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import {NavLink} from 'react-router-dom'
+import {ShoppingCart} from 'lucide-react'
+import {useNavigate} from 'react-router-dom'
 import useAuth from '@/hooks/useAuth'
-import { Button } from '@/components/ui/button'
+import {Button} from '@/components/ui/button'
+import useCart from '@/hooks/useCart'
 
 function Navbar() {
-    const { currentUser, logout } = useAuth()
+    const {currentUser, logout} = useAuth()
     const navigate = useNavigate()
+    const {cart} = useCart()
+
+    const cartItemCount = cart.reduce(
+        (total, item) => total + item.quantity,
+        0,
+    )
 
     function handleLogout() {
         logout()
-        navigate('/login', { replace: true })
+        navigate('/login', {replace: true})
     }
 
     return (
@@ -39,8 +46,19 @@ function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <NavLink to="/cart" aria-label="Shopping cart">
-                        <ShoppingCart className="size-5" />
+                    <NavLink
+                        to="/cart"
+                        aria-label={`Shopping cart, ${cartItemCount} items`}
+                        className="inline-flex items-center gap-2"
+                    >
+                        <ShoppingCart className="size-5"/>
+
+                        {cartItemCount > 0 && (
+                            <span
+                                className="inline-flex min-w-5 items-center justify-center rounded-full bg-orange-600 px-1.5 py-0.5 text-xs font-semibold text-white">
+                                {cartItemCount}
+                            </span>
+                        )}
                     </NavLink>
 
                     {currentUser ? (
