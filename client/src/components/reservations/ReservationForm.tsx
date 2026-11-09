@@ -1,272 +1,328 @@
+import { useState } from "react";
+import type { SubmitEvent, Dispatch, SetStateAction } from "react";
+import { CalendarDays, ArrowRight } from "lucide-react";
 
-import { useState } from 'react'
-import useAuth from '@/hooks/useAuth'
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import type { User } from "@/types/user";
 import type {
-    ReservationType,
-    EventType
-} from '@/types/reservation'
-import { CalendarDays, ArrowRight } from 'lucide-react'
+  Reservation,
+  ReservationType,
+  EventType,
+} from "@/types/reservation";
+import ReservationConfirmationDialog from "./ReservationConfirmationDialog";
 
-export default function ReservationForm() {
-    const { currentUser } = useAuth()
+type ReservationFormData = Pick<
+  Reservation,
+  | "type"
+  | "date"
+  | "time"
+  | "guests"
+  | "phone"
+  | "notes"
+  | "eventType"
+  | "menuPreference"
+>;
 
-    // Reservation type
-    const [type, setType] = useState<ReservationType>('table')
+interface ReservationFormProps {
+  currentUser: User | null;
+  setReservations: Dispatch<SetStateAction<Reservation[]>>;
+}
 
-    // Form fields
-    const [date, setDate] = useState('')
-    const [time, setTime] = useState('')
-    const [guests, setGuests] = useState(2)
-    const [phone, setPhone] = useState(currentUser?.phone || '')
-    const [notes, setNotes] = useState('')
+export default function ReservationForm({
+  currentUser,
+  setReservations,
+}: ReservationFormProps) {
+  const [formData, setFormData] = useState<ReservationFormData>({
+    type: "table",
+    date: "",
+    time: "",
+    guests: 2,
+    phone: currentUser?.phone ?? "",
+    notes: "",
+    eventType: null,
+    menuPreference: "",
+  });
 
-    // Special event fields
-    const [eventType, setEventType] = useState<EventType | ''>('')
-    const [menuPreference, setMenuPreference] = useState('')
+  const [message, setMessage] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
-    function handleReservation(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault()
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setMessage("");
 
-        if (!currentUser) {
-            alert('Please sign in to make a reservation')
-            return
-        }
-
-        // We will save the reservation in the next step
-        console.log({
-            type,
-            date,
-            time,
-            guests,
-            phone,
-            notes,
-            eventType: type === 'table' ? null : eventType,
-            menuPreference: type === 'table' ? '' : menuPreference
-        })
-
-        alert('Form submitted for testing!')
+    if (!currentUser) {
+      setMessage("Please sign in to make a reservation.");
+      return;
     }
 
-    return (
-       <form
-    onSubmit={handleReservation}
-    className="min-w-0 w-full rounded-xl border border-stone-200 bg-white p-6"
->
-            <h2 className="mb-6 text-2xl font-semibold text-stone-900">
-                Make a reservation
-            </h2>
+    if (
+      formData.type === "event" &&
+      (!formData.eventType || !formData.menuPreference)
+    ) {
+      setMessage("Please complete the special event fields.");
+      return;
+    }
 
-         
-{/* Reservation tabs */}
-<div className="mb-6 flex gap-2 rounded-lg bg-stone-100 p-1">
-    <Button
-        type="button"
-        variant="ghost"
-        onClick={() => setType('table')}
-        className={
-            type === 'table'
-                ? 'bg-white text-emerald-800 hover:bg-white'
-                : 'text-stone-600 hover:bg-stone-200'
-        }
-    >
-        <CalendarDays className="mr-1 h-4 w-4" />
-        Table reservation
-    </Button>
+    const newReservation: Reservation = {
+      ...formData,
+      id: crypto.randomUUID(),
+      userId: currentUser.id,
+      eventType: formData.type === "table" ? null : formData.eventType,
+      menuPreference: formData.type === "table" ? "" : formData.menuPreference,
+      status: "pending",
+    };
 
-    <Button
-        type="button"
-        variant="ghost"
-        onClick={() => setType('event')}
-        className={
-            type === 'event'
-                ? 'bg-white text-emerald-800 hover:bg-white'
-                : 'text-stone-600 hover:bg-stone-200'
-        }
-    >
-        Special event
-    </Button>
-</div>
+    setReservations((previous) => [...previous, newReservation]);
+    setShowConfirmation(true);
 
+    setFormData({
+      type: "table",
+      date: "",
+      time: "",
+      guests: 2,
+      phone: currentUser.phone ?? "",
+      notes: "",
+      eventType: null,
+      menuPreference: "",
+    });
+  }
 
-            <div className="space-y-4">
-<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+  return (
+    <>
+      <form
+        onSubmit={handleSubmit}
+        className="min-w-0 w-full rounded-xl border border-stone-200 bg-white p-6"
+      >
+        <h2 className="mb-6 text-2xl font-semibold text-stone-900">
+          Make a reservation
+        </h2>
 
-    {/* Full name */}
-    <div>
-        <label className="mb-1 block text-sm font-medium">
-            Full name
-        </label>
-        <input
-            type="text"
-            value={currentUser?.name || ''}
-            readOnly
-            placeholder="Your name"
-            className="w-full rounded-lg border border-stone-300 bg-stone-50 p-3"
-        />
-    </div>
+        <Tabs
+          value={formData.type}
+          onValueChange={(value) =>
+            setFormData((previous) => ({
+              ...previous,
+              type: value as ReservationType,
+            }))
+          }
+          className="mb-6"
+        >
+          <TabsList className="mb-6 grid h-12! w-full grid-cols-2 p-2">
+            <TabsTrigger value="table" className="h-full py-0">
+              <CalendarDays className="mr-2 h-4 w-4 text-emerald-700" />
+              Table reservation
+            </TabsTrigger>
 
-    {/* Email */}
-    <div>
-        <label className="mb-1 block text-sm font-medium">
-            Email address
-        </label>
-        <input
-            type="email"
-            value={currentUser?.email || ''}
-            readOnly
-            placeholder="you@example.com"
-            className="w-full rounded-lg border border-stone-300 bg-stone-50 p-3"
-        />
-    </div>
+            <TabsTrigger value="event" className="h-full py-0">
+              Special event
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
 
-</div>
-
-                {/* Date and Time */}
-        <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="mb-1 block text-sm font-medium">
-                            Date
-                        </label>
-                        <input
-                            type="date"
-                            value={date}
-                            onChange={(e) => setDate(e.target.value)}
-                            required
-                            className="w-full rounded-lg border border-stone-300 p-3"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="mb-1 block text-sm font-medium">
-                            Time
-                        </label>
-                        <select
-                            value={time}
-                            onChange={(e) => setTime(e.target.value)}
-                            required
-                            className="w-full rounded-lg border border-stone-300 p-3"
-                        >
-                            <option value="">Choose time</option>
-                            <option value="17:00">5:00 PM</option>
-                            <option value="17:30">5:30 PM</option>
-                            <option value="18:00">6:00 PM</option>
-                            <option value="18:30">6:30 PM</option>
-                            <option value="19:00" disabled>
-                                7:00 PM — Unavailable
-                            </option>
-                            <option value="19:30">7:30 PM</option>
-                            <option value="20:00">8:00 PM</option>
-                        </select>
-                    </div>
-                </div>
-
-                {/* Guests and Phone */}
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <label className="mb-1 block text-sm font-medium">
-                            Number of guests
-                        </label>
-                        <input
-                            type="number"
-                            min="1"
-                            max="40"
-                            value={guests}
-                            onChange={(e) => setGuests(Number(e.target.value))}
-                            required
-                            className="w-full rounded-lg border border-stone-300 p-3"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="mb-1 block text-sm font-medium">
-                            Phone number
-                        </label>
-                        <input
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            required
-                            className="w-full rounded-lg border border-stone-300 p-3"
-                        />
-                    </div>
-                </div>
-
-                {/* Special Event fields */}
-                {type === 'event' && (
-                    <>
-                        <div>
-                            <label className="mb-1 block text-sm font-medium">
-                                Event type
-                            </label>
-                            <select
-                                value={eventType}
-                                onChange={(e) => setEventType(e.target.value as EventType)}
-                                required
-                                className="w-full rounded-lg border border-stone-300 p-3"
-                            >
-                                <option value="">Select event type</option>
-                                <option value="birthday">Birthday</option>
-                                <option value="corporate">Corporate gathering</option>
-                                <option value="other">Other celebration</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="mb-1 block text-sm font-medium">
-                                Menu preference
-                            </label>
-                            <select
-                                value={menuPreference}
-                                onChange={(e) => setMenuPreference(e.target.value)}
-                                required
-                                className="w-full rounded-lg border border-stone-300 p-3"
-                            >
-                                <option value="">Select menu preference</option>
-                                <option value="regular">Regular restaurant menu</option>
-                                <option value="vegetarian">Vegetarian selection</option>
-                                <option value="group">Discuss a group menu</option>
-                            </select>
-                        </div>
-                    </>
-                )}
-
-                {/* Special Requests */}
-                <div>
-                    <label className="mb-1 block text-sm font-medium">
-                        Special requests (optional)
-                    </label>
-                    <textarea
-    value={notes}
-    onChange={(e) => setNotes(e.target.value)}
-    rows={3}
-    placeholder="Dietary needs, accessibility, or a special occasion..."
-    className="w-full rounded-lg border border-stone-300 p-3"
-/>
-                </div>
-
-              
-{/* Reservation notice */}
-<div className="flex items-center gap-2 rounded-lg bg-emerald-50 p-4 text-sm text-emerald-800">
-    <CalendarDays className="h-4 w-4 shrink-0" />
-
-    <span>
-        Unavailable times cannot be selected.
-        Your confirmation will appear after you submit.
-    </span>
-</div>
-
-
-                
-<Button
-    type="submit"
-    className="bg-orange-600 px-5 py-5 text-white hover:bg-orange-700"
->
-    Request reservation
-    <ArrowRight className="ml-2 h-4 w-4" />
-</Button>
-
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="reservation-name">Full name</Label>
+              <Input
+                id="reservation-name"
+                value={currentUser?.name ?? ""}
+                placeholder="Your name"
+                readOnly
+              />
             </div>
-        </form>
-    )
+
+            <div className="space-y-2">
+              <Label htmlFor="reservation-email">Email address</Label>
+              <Input
+                id="reservation-email"
+                type="email"
+                value={currentUser?.email ?? ""}
+                placeholder="you@example.com"
+                readOnly
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="min-w-0 space-y-2">
+              <Label htmlFor="reservation-date">Date</Label>
+              <Input
+                id="reservation-date"
+                type="date"
+                value={formData.date}
+                onChange={(event) =>
+                  setFormData((previous) => ({
+                    ...previous,
+                    date: event.target.value,
+                  }))
+                }
+                required
+                min={new Date().toLocaleDateString("en-CA")}
+              />
+            </div>
+
+            <div className="min-w-0 space-y-2">
+              <Label htmlFor="reservation-time">Time</Label>
+              <select
+                id="reservation-time"
+                value={formData.time}
+                onChange={(event) =>
+                  setFormData((previous) => ({
+                    ...previous,
+                    time: event.target.value,
+                  }))
+                }
+                required
+                className="h-9 w-full rounded-md border border-stone-300 bg-white px-3 text-sm"
+              >
+                <option value="">Choose time</option>
+                <option value="17:00">17:00</option>
+                <option value="17:30">17:30</option>
+                <option value="18:00">18:00</option>
+                <option value="18:30">18:30</option>
+                <option value="19:00" disabled>
+                  19:00 — Unavailable
+                </option>
+                <option value="19:30">19:30</option>
+                <option value="20:00">20:00</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="reservation-guests">Number of guests</Label>
+              <Input
+                id="reservation-guests"
+                type="number"
+                min={1}
+                max={40}
+                value={formData.guests}
+                onChange={(event) =>
+                  setFormData((previous) => ({
+                    ...previous,
+                    guests: Number(event.target.value),
+                  }))
+                }
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="reservation-phone">Phone number</Label>
+              <Input
+                id="reservation-phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(event) =>
+                  setFormData((previous) => ({
+                    ...previous,
+                    phone: event.target.value,
+                  }))
+                }
+                required
+              />
+            </div>
+          </div>
+
+          {formData.type === "event" && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="reservation-event">Event type</Label>
+                <select
+                  id="reservation-event"
+                  value={formData.eventType ?? ""}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      eventType: (event.target.value as EventType) || null,
+                    }))
+                  }
+                  required
+                  className="h-9 w-full rounded-md border border-stone-300 bg-white px-3 text-sm"
+                >
+                  <option value="">Select event type</option>
+                  <option value="birthday">Birthday</option>
+                  <option value="corporate">Corporate gathering</option>
+                  <option value="other">Other celebration</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="reservation-menu">Menu preference</Label>
+                <select
+                  id="reservation-menu"
+                  value={formData.menuPreference}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      menuPreference: event.target.value,
+                    }))
+                  }
+                  required
+                  className="h-9 w-full rounded-md border border-stone-300 bg-white px-3 text-sm"
+                >
+                  <option value="">Select menu preference</option>
+                  <option value="regular">Regular restaurant menu</option>
+                  <option value="vegetarian">Vegetarian selection</option>
+                  <option value="group">Discuss a group menu</option>
+                </select>
+              </div>
+            </>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="reservation-notes">
+              Special requests (optional)
+            </Label>
+            <textarea
+              id="reservation-notes"
+              value={formData.notes}
+              onChange={(event) =>
+                setFormData((previous) => ({
+                  ...previous,
+                  notes: event.target.value,
+                }))
+              }
+              rows={3}
+              placeholder="Dietary needs, accessibility, or a special occasion..."
+              className="w-full rounded-lg border border-stone-300 p-3 text-sm"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 rounded-lg bg-emerald-50 p-4 text-sm text-emerald-800">
+            <CalendarDays className="h-4 w-4 shrink-0" />
+            <span>
+              Unavailable times cannot be selected. Your confirmation will
+              appear after you submit.
+            </span>
+          </div>
+
+          {message && (
+            <p role="status" className="text-sm text-emerald-700">
+              {message}
+            </p>
+          )}
+
+          <Button
+            type="submit"
+            className="h-auto bg-orange-600 px-5 py-3 text-white hover:bg-orange-700"
+          >
+            Request reservation
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      </form>
+
+      {showConfirmation && (
+        <ReservationConfirmationDialog
+          onClose={() => setShowConfirmation(false)}
+        />
+      )}
+    </>
+  );
 }
