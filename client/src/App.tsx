@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import CustomerLayout from '@/layouts/CustomerLayout'
 import AdminLayout from '@/layouts/AdminLayout'
 import AuthPage from '@/pages/AuthPage'
+import HomePage from '@/pages/HomePage'
 import { MenuItemsPage } from '@/pages/admin/MenuItemsPage'
 import {OrdersPage} from "@/pages/admin/OrdersPage.tsx";
 import {AdminReservationsPage} from "@/pages/admin/AdminReservationsPage.tsx";
@@ -14,6 +15,7 @@ export default function App() {
     return (
         <Routes>
             <Route element={<CustomerLayout />}>
+                <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<AuthPage />} />
                 <Route path="/reservations" element={<ReservationsPage />} />
                 <Route path="/cart" element={<CartPage />} />
