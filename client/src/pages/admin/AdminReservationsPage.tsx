@@ -12,7 +12,7 @@ const statusOptions = [
     { label: 'Finished', value: 'finished' },
 ]
 
-export function ReservationsPage() {
+export function AdminReservationsPage() {
     const { reservations, setReservations, users } = useData()
     const [search, setSearch] = useState('')
     const [status, setStatus] = useState('all')
