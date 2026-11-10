@@ -8,6 +8,7 @@ import {AdminReservationsPage} from "@/pages/admin/AdminReservationsPage.tsx";
 import {UsersPage} from "@/pages/admin/UsersPage.tsx";
 import CartPage from "@/pages/CartPage.tsx";
 import ReservationsPage from '@/pages/ReservationsPage'
+import RequireAdmin from '@/components/auth/RequireAdmin'
 
 export default function App() {
     return (
@@ -20,11 +21,13 @@ export default function App() {
                 {/* Add other customer routes here */}
             </Route>
 
-            <Route path="/admin" element={<AdminLayout />}>
-                <Route path="menu" element={<MenuItemsPage />} />
-                <Route path="orders" element={<OrdersPage />} />
-                <Route path="reservations" element={<AdminReservationsPage />} />
-                <Route path="users" element={<UsersPage />} />
+            <Route element={<RequireAdmin />}>
+                <Route path="/admin" element={<AdminLayout />}>
+                    <Route path="menu" element={<MenuItemsPage />} />
+                    <Route path="orders" element={<OrdersPage />} />
+                    <Route path="reservations" element={<AdminReservationsPage />} />
+                    <Route path="users" element={<UsersPage />} />
+                </Route>
             </Route>
         </Routes>
     )
