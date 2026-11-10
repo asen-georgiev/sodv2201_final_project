@@ -4,6 +4,9 @@ import AdminLayout from '@/layouts/AdminLayout'
 import AuthPage from '@/pages/AuthPage'
 import { MenuItemsPage } from '@/pages/admin/MenuItemsPage'
 import {OrdersPage} from "@/pages/admin/OrdersPage.tsx";
+import {ReservationsPage} from "@/pages/admin/ReservationsPage.tsx";
+import {UsersPage} from "@/pages/admin/UsersPage.tsx";
+import CartPage from "@/pages/CartPage.tsx";
 import ReservationsPage from '@/pages/ReservationsPage'
 
 export default function App() {
@@ -12,6 +15,7 @@ export default function App() {
             <Route element={<CustomerLayout />}>
                 <Route path="/login" element={<AuthPage />} />
                 <Route path="/reservations" element={<ReservationsPage />} />
+                <Route path="/cart" element={<CartPage />} />
 
                 {/* Add other customer routes here */}
             </Route>
@@ -19,8 +23,8 @@ export default function App() {
             <Route path="/admin" element={<AdminLayout />}>
                 <Route path="menu" element={<MenuItemsPage />} />
                 <Route path="orders" element={<OrdersPage />} />
-
-                {/* Add other admin routes here */}
+                <Route path="reservations" element={<ReservationsPage />} />
+                <Route path="users" element={<UsersPage />} />
             </Route>
         </Routes>
     )
