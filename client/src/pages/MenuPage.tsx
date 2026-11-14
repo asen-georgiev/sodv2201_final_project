@@ -1,0 +1,169 @@
+
+import { useState } from 'react'
+import { Leaf } from 'lucide-react'
+import UserPageHeader from '@/components/UserPageHeader'
+import DishCard from '@/components/home/DishCard'
+import DishDetailsDialog from '@/components/home/DishDetailsDialog'
+import useAuth from '@/hooks/useAuth'
+import useCart from '@/hooks/useCart'
+import useData from '@/hooks/useData'
+import type { MenuItem, MenuCategory } from '@/types/menu'
+import { Button } from '@/components/ui/button'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+
+export default function MenuPage() {
+    const { menu } = useData()
+    const { currentUser } = useAuth()
+    const { addItem } = useCart()
+
+    const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null)
+    const [search, setSearch] = useState('')
+    const [category, setCategory] = useState<MenuCategory | 'all'>('all')
+    const [dietary, setDietary] = useState('all')
+    const [maxPrice, setMaxPrice] = useState('all')
+
+    const availableDishes = menu.filter(dish =>
+        dish.isAvailable &&
+        dish.name.toLowerCase().includes(search.toLowerCase()) &&
+        (category === 'all' || dish.category === category) &&
+        (dietary === 'all' ||
+            dish.dietaryOptions.includes(dietary as 'vegetarian' | 'gluten-free')) &&
+        (maxPrice === 'all' || dish.price <= Number(maxPrice))
+    )
+
+    function handleAddToCart(dish: MenuItem) {
+        addItem(dish.id)
+        setSelectedDish(null)
+    }
+
+    return (
+        <main className="min-h-screen bg-stone-50">
+            <div className="mx-auto max-w-[1200px] px-6 py-12">
+                <UserPageHeader
+                    eyebrow="Made fresh, served with care"
+                    title="Find your next favorite."
+                    description="A little comfort, a little discovery. Something delicious for every appetite."
+                />
+
+                <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center">
+                    <div className="w-full min-w-0 md:flex-1">
+                        <input
+                            type="text"
+                            placeholder="Search dishes..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            className="h-12 w-full rounded-lg border border-gray-300 bg-white px-4 text-sm outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                        />
+                    </div>
+
+                    <Select
+                        value={dietary}
+                        onValueChange={value => setDietary(value ?? 'all')}
+                    >
+                        <SelectTrigger className="!h-12 w-full rounded-lg border-gray-300 bg-white md:w-56">
+                            <SelectValue>
+                                {dietary === 'all'
+                                    ? 'All dietary options'
+                                    : dietary === 'vegetarian'
+                                        ? 'Vegetarian'
+                                        : 'Gluten-free'}
+                            </SelectValue>
+                        </SelectTrigger>
+
+                        <SelectContent>
+                            <SelectItem value="all">All dietary options</SelectItem>
+                            <SelectItem value="vegetarian">Vegetarian</SelectItem>
+                            <SelectItem value="gluten-free">Gluten-free</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    <Select
+                        value={maxPrice}
+                        onValueChange={value => setMaxPrice(value ?? 'all')}
+                    >
+                        <SelectTrigger className="!h-12 w-full rounded-lg border-gray-300 bg-white md:w-56">
+                            <SelectValue>
+                                {maxPrice === 'all'
+                                    ? 'Any price'
+                                    : `Under $${maxPrice}`}
+                            </SelectValue>
+                        </SelectTrigger>
+
+                        <SelectContent>
+                            <SelectItem value="all">Any price</SelectItem>
+                            <SelectItem value="10">Under $10</SelectItem>
+                            <SelectItem value="15">Under $15</SelectItem>
+                            <SelectItem value="20">Under $20</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div className="mb-6 flex items-center justify-between gap-4">
+                    <div className="flex flex-wrap gap-2">
+                        {(['all', 'starters', 'mains', 'desserts', 'beverages'] as const).map(item => (
+                            <Button
+                                key={item}
+                                type="button"
+                                variant="outline"
+                                onClick={() => setCategory(item)}
+                                className={`rounded-full px-5 py-2 text-sm font-normal ${
+                                    category === item
+                                        ? 'border-emerald-900 bg-emerald-900 text-white hover:bg-emerald-800 hover:text-white'
+                                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                                }`}
+                            >
+                                {item === 'all'
+                                    ? 'All'
+                                    : item.charAt(0).toUpperCase() + item.slice(1)}
+                            </Button>
+                        ))}
+                    </div>
+
+                    <span className="shrink-0 text-sm text-gray-500">
+                        {availableDishes.length} dishes
+                    </span>
+                </div>
+
+                {availableDishes.length > 0 ? (
+                    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                        {availableDishes.map(dish => (
+                            <DishCard
+                                key={dish.id}
+                                dish={dish}
+                                onSelect={setSelectedDish}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <p className="py-12 text-center text-gray-500">
+                        No dishes found. Try a different search or filter.
+                    </p>
+                )}
+
+                <Alert className="mt-8 rounded-xl border-0 bg-emerald-50 px-5 py-4 text-emerald-900">
+                    <Leaf className="size-5" />
+                    <AlertDescription className="text-emerald-900">
+                        Have an allergy? Ingredient information is available on each dish.
+                        Please speak with our team before ordering.
+                    </AlertDescription>
+                </Alert>
+
+                {selectedDish && (
+                    <DishDetailsDialog
+                        dish={selectedDish}
+                        canOrder={currentUser?.role === 'customer'}
+                        onAddToCart={handleAddToCart}
+                        onClose={() => setSelectedDish(null)}
+                    />
+                )}
+            </div>
+        </main>
+    )
+}
