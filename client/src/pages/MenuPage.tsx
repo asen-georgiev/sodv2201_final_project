@@ -7,7 +7,12 @@ import DishDetailsDialog from '@/components/home/DishDetailsDialog'
 import useAuth from '@/hooks/useAuth'
 import useCart from '@/hooks/useCart'
 import useData from '@/hooks/useData'
-import type { MenuItem, MenuCategory } from '@/types/menu'
+import {
+    MENU_CATEGORIES,
+    type MenuItem,
+    type MenuCategory,
+    type DietaryOption,
+} from '@/types/menu'
 import { Button } from '@/components/ui/button'
 import {
     Select,
@@ -26,14 +31,13 @@ export default function MenuPage() {
     const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null)
     const [search, setSearch] = useState('')
     const [category, setCategory] = useState<MenuCategory | 'all'>('all')
-    const [dietary, setDietary] = useState('all')
+    const [dietary, setDietary] = useState<DietaryOption | 'all'>('all')
     const [maxPrice, setMaxPrice] = useState('all')
 
     const filteredDishes = menu.filter(dish =>
         dish.name.toLowerCase().includes(search.toLowerCase()) &&
         (category === 'all' || dish.category === category) &&
-        (dietary === 'all' ||
-            dish.dietaryOptions.includes(dietary as 'vegetarian' | 'gluten-free')) &&
+        ((dietary === 'all' || dish.dietaryOptions.includes(dietary))) &&
         (maxPrice === 'all' || dish.price <= Number(maxPrice))
     )
 
@@ -108,7 +112,7 @@ export default function MenuPage() {
 
                 <div className="mb-6 flex items-center justify-between gap-4">
                     <div className="flex flex-wrap gap-2">
-                        {(['all', 'starters', 'mains', 'desserts', 'beverages'] as const).map(item => (
+                        {(['all', ...MENU_CATEGORIES] as const).map(item => (
                             <Button
                                 key={item}
                                 type="button"
@@ -138,9 +142,11 @@ export default function MenuPage() {
                             <div key={dish.id} className="relative">
                                 <DishCard
                                     dish={dish}
-                                    onSelect={dish.isAvailable
-                                        ? setSelectedDish
-                                        : () => {}}
+                                   onSelect={() => {
+    if (dish.isAvailable) {
+        setSelectedDish(dish)
+    }
+}}
                                 />
 
                                 {!dish.isAvailable && (
