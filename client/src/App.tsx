@@ -23,8 +23,6 @@ export default function App() {
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/menu" element={<MenuPage />} />
                 <Route path="/account" element={<AccountPage />} />
-
-                {/* Add other customer routes here */}
             </Route>
 
             <Route element={<RequireAdmin />}>
