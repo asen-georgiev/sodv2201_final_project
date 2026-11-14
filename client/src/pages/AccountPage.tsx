@@ -20,6 +20,15 @@ export default function AccountPage() {
     const [activeTab, setActiveTab] = useState<AccountTab>('orders')
     const [editingReservation, setEditingReservation] = useState(false)
     const [cancellingReservation, setCancellingReservation] = useState<Reservation | null>(null)
+    const firstName = currentUser.name.split(' ')[0]
+
+    const userOrders = orders
+        .filter(order => order.userId === currentUser.id)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+    const userReservations = reservations
+        .filter(reservation => reservation.userId === currentUser.id)
+        .sort((a, b) => b.date.localeCompare(a.date))
 
     function handleSignOut() {
         logout()
@@ -84,16 +93,6 @@ export default function AccountPage() {
             </div>
         )
     }
-
-    const firstName = currentUser.name.split(' ')[0]
-
-    const userOrders = orders
-        .filter(order => order.userId === currentUser.id)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-
-    const userReservations = reservations
-        .filter(reservation => reservation.userId === currentUser.id)
-        .sort((a, b) => b.date.localeCompare(a.date))
 
     return (
         <div className="py-10">
