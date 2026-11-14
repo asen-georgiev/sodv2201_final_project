@@ -29,8 +29,7 @@ export default function MenuPage() {
     const [dietary, setDietary] = useState('all')
     const [maxPrice, setMaxPrice] = useState('all')
 
-    const availableDishes = menu.filter(dish =>
-        dish.isAvailable &&
+    const filteredDishes = menu.filter(dish =>
         dish.name.toLowerCase().includes(search.toLowerCase()) &&
         (category === 'all' || dish.category === category) &&
         (dietary === 'all' ||
@@ -39,6 +38,8 @@ export default function MenuPage() {
     )
 
     function handleAddToCart(dish: MenuItem) {
+        if (!dish.isAvailable) return
+
         addItem(dish.id)
         setSelectedDish(null)
     }
@@ -127,18 +128,27 @@ export default function MenuPage() {
                     </div>
 
                     <span className="shrink-0 text-sm text-gray-500">
-                        {availableDishes.length} dishes
+                        {filteredDishes.length} dishes
                     </span>
                 </div>
 
-                {availableDishes.length > 0 ? (
+                {filteredDishes.length > 0 ? (
                     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                        {availableDishes.map(dish => (
-                            <DishCard
-                                key={dish.id}
-                                dish={dish}
-                                onSelect={setSelectedDish}
-                            />
+                        {filteredDishes.map(dish => (
+                            <div key={dish.id} className="relative">
+                                <DishCard
+                                    dish={dish}
+                                    onSelect={dish.isAvailable
+                                        ? setSelectedDish
+                                        : () => {}}
+                                />
+
+                                {!dish.isAvailable && (
+                                    <span className="pointer-events-none absolute right-3 top-3 rounded-md bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
+                                        Unavailable
+                                    </span>
+                                )}
+                            </div>
                         ))}
                     </div>
                 ) : (
@@ -158,7 +168,7 @@ export default function MenuPage() {
                 {selectedDish && (
                     <DishDetailsDialog
                         dish={selectedDish}
-                        canOrder={currentUser?.role === 'customer'}
+                        canOrder={currentUser?.role === 'customer' && selectedDish.isAvailable}
                         onAddToCart={handleAddToCart}
                         onClose={() => setSelectedDish(null)}
                     />
