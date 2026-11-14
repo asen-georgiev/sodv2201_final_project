@@ -10,6 +10,7 @@ import {AdminReservationsPage} from "@/pages/admin/AdminReservationsPage.tsx";
 import {UsersPage} from "@/pages/admin/UsersPage.tsx";
 import CartPage from "@/pages/CartPage.tsx";
 import ReservationsPage from '@/pages/ReservationsPage'
+import AccountPage from '@/pages/AccountPage'
 import RequireAdmin from '@/components/auth/RequireAdmin'
 
 export default function App() {
@@ -21,6 +22,7 @@ export default function App() {
                 <Route path="/reservations" element={<ReservationsPage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/menu" element={<MenuPage />} />
+                <Route path="/account" element={<AccountPage />} />
 
                 {/* Add other customer routes here */}
             </Route>
