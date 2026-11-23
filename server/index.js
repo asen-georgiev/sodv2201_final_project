@@ -3,14 +3,26 @@ require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const mongoose = require('mongoose')
+const cookieParser = require('cookie-parser')
+const authRoutes = require('./routes/authRoutes')
+const checkOrigin = require('./middlewares/checkOrigin')
+const {
+    notFound,
+    errorHandler,
+} = require('./middlewares/errorMiddleware')
 
 const app = express()
 
+const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173'
+
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: clientUrl,
+    credentials: true,
 }))
 
 app.use(express.json())
+app.use(cookieParser())
+app.use(checkOrigin)
 
 app.get('/api/health', (req, res) => {
     const databaseConnected = mongoose.connection.readyState === 1
@@ -20,6 +32,10 @@ app.get('/api/health', (req, res) => {
         database: databaseConnected ? 'connected' : 'disconnected',
     })
 })
+
+app.use('/api/auth', authRoutes)
+app.use(notFound)
+app.use(errorHandler)
 
 async function startServer() {
     try {
