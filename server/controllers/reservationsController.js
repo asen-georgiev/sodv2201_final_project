@@ -220,28 +220,21 @@ async function cancelReservation(req, res, next) {
 
         if (!mongoose.isObjectIdOrHexString(id)) {
             return res.status(400).json({
-                message: 'Provide a valid reservation id.',
+                message: 'Provide a valid reservation ID.',
             })
         }
 
-        const reservation = await Reservation.findOne({
+        const reservation = await Reservation.findOneAndDelete({
             _id: id,
             userId: req.user._id,
+            status: 'pending',
         })
 
         if (!reservation) {
             return res.status(404).json({
-                message: 'Reservation not found.',
+                message: 'Pending reservation not found or no longer cancellable.',
             })
         }
-
-        if (reservation.status === 'finished') {
-            return res.status(400).json({
-                message: 'Finished reservations cannot be cancelled.',
-            })
-        }
-
-        await reservation.deleteOne()
 
         return res.status(200).json({
             message: 'Reservation cancelled successfully.',
