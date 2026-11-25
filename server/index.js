@@ -5,6 +5,7 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 const cookieParser = require('cookie-parser')
 const authRoutes = require('./routes/authRoutes')
+const reservationsRoutes = require('./routes/reservationsRoutes')
 const checkOrigin = require('./middlewares/checkOrigin')
 const {
     notFound,
@@ -34,6 +35,7 @@ app.get('/api/health', (req, res) => {
 })
 
 app.use('/api/auth', authRoutes)
+app.use('/api/reservations', reservationsRoutes)
 app.use(notFound)
 app.use(errorHandler)
 
