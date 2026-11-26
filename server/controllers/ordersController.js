@@ -24,7 +24,7 @@ function calculateTotal(items) {
     )
 }
 
-function publicOrder(order) {
+function buildOrderResponse(order) {
     return {
         id: order._id.toString(),
         userId: order.userId.toString(),
@@ -112,23 +112,32 @@ async function createOrder(req, res, next) {
             items.push(purchasedItem(dish, cartItem.quantity))
         }
 
-        const order = await Order.create({
-            userId: req.user._id,
-            items,
-            fulfillmentType,
-            deliveryAddress:
-                fulfillmentType === 'delivery' ? normalizedAddress : '',
-            notes: normalizedNotes,
-            total: calculateTotal(items),
-            status: 'pending',
+        const order = await mongoose.connection.transaction(async session => {
+            const [createdOrder] = await Order.create(
+                [
+                    {
+                        userId: req.user._id,
+                        items,
+                        fulfillmentType,
+                        deliveryAddress:
+                            fulfillmentType === 'delivery' ? normalizedAddress : '',
+                        notes: normalizedNotes,
+                        total: calculateTotal(items),
+                        status: 'pending',
+                    },
+                ],
+                { session },
+            )
+
+            cart.items = []
+
+            await cart.save({ session })
+
+            return createdOrder
         })
 
-        cart.items = []
-
-        await cart.save()
-
         return res.status(201).json({
-            order: publicOrder(order),
+            order: buildOrderResponse(order),
         })
     } catch (error) {
         next(error)
@@ -142,7 +151,7 @@ async function getMyOrders(req, res, next) {
         }).sort({ createdAt: -1 })
 
         return res.status(200).json({
-            orders: orders.map(publicOrder),
+            orders: orders.map(buildOrderResponse),
         })
     } catch (error) {
         next(error)
@@ -177,7 +186,7 @@ async function getOrderById(req, res, next) {
         }
 
         return res.status(200).json({
-            order: publicOrder(order),
+            order: buildOrderResponse(order),
         })
     } catch (error) {
         next(error)
@@ -189,7 +198,7 @@ async function getAllOrders(req, res, next) {
         const orders = await Order.find().sort({ createdAt: -1 })
 
         return res.status(200).json({
-            orders: orders.map(publicOrder),
+            orders: orders.map(buildOrderResponse),
         })
     } catch (error) {
         next(error)
@@ -226,7 +235,7 @@ async function updateOrderStatus(req, res, next) {
         await order.save()
 
         return res.status(200).json({
-            order: publicOrder(order),
+            order: buildOrderResponse(order),
         })
     } catch (error) {
         next(error)

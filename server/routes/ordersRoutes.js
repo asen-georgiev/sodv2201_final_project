@@ -6,7 +6,7 @@ const {
     getOrderById,
     getAllOrders,
     updateOrderStatus,
-} = require('../controllers/orderController')
+} = require('../controllers/ordersController')
 
 const {
     requireAuth,

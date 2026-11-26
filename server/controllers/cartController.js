@@ -12,22 +12,38 @@ function isValidQuantity(quantity, min) {
     )
 }
 
-async function findOrCreateCart(userId) {
-    const cart = await Cart.findOne({
-        userId,
-    })
+async function upsertCart(userId) {
+    try {
+        return await Cart.findOneAndUpdate(
+            {
+                userId,
+            },
+            {
+                $setOnInsert: {
+                    items: [],
+                },
+            },
+            {
+                upsert: true,
+                returnDocument: 'after',
+            },
+        )
+    } catch (error) {
+        if (error.code === 11000) {
+            return Cart.findOne({
+                userId,
+            })
+        }
 
-    if (cart) {
-        return cart
+        throw error
     }
-
-    return Cart.create({
-        userId,
-        items: [],
-    })
 }
 
-async function publicCart(cart) {
+async function buildCartResponse(cart) {
+    if (!cart || cart.items.length === 0) {
+        return []
+    }
+
     const dishes = await MenuItem.find({
         _id: { $in: cart.items.map(item => item.menuItemId) },
     })
@@ -50,10 +66,12 @@ async function publicCart(cart) {
 
 async function getCart(req, res, next) {
     try {
-        const cart = await findOrCreateCart(req.user._id)
+        const cart = await Cart.findOne({
+            userId: req.user._id,
+        })
 
         return res.status(200).json({
-            cart: await publicCart(cart),
+            cart: await buildCartResponse(cart),
         })
     } catch (error) {
         next(error)
@@ -99,7 +117,7 @@ async function addCartItem(req, res, next) {
             })
         }
 
-        const cart = await findOrCreateCart(req.user._id)
+        const cart = await upsertCart(req.user._id)
 
         const cartItem = cart.items.find(item =>
             item.menuItemId.equals(menuItemId),
@@ -123,7 +141,7 @@ async function addCartItem(req, res, next) {
         await cart.save()
 
         return res.status(200).json({
-            cart: await publicCart(cart),
+            cart: await buildCartResponse(cart),
         })
     } catch (error) {
         next(error)
@@ -153,7 +171,15 @@ async function updateCartItem(req, res, next) {
             })
         }
 
-        const cart = await findOrCreateCart(req.user._id)
+        const cart = await Cart.findOne({
+            userId: req.user._id,
+        })
+
+        if (!cart) {
+            return res.status(404).json({
+                message: 'Cart not found.',
+            })
+        }
 
         const cartItem = cart.items.find(item =>
             item.menuItemId.equals(menuItemId),
@@ -186,7 +212,7 @@ async function updateCartItem(req, res, next) {
         await cart.save()
 
         return res.status(200).json({
-            cart: await publicCart(cart),
+            cart: await buildCartResponse(cart),
         })
     } catch (error) {
         next(error)
@@ -203,7 +229,15 @@ async function removeCartItem(req, res, next) {
             })
         }
 
-        const cart = await findOrCreateCart(req.user._id)
+        const cart = await Cart.findOne({
+            userId: req.user._id,
+        })
+
+        if (!cart) {
+            return res.status(404).json({
+                message: 'Cart not found.',
+            })
+        }
 
         const itemInCart = cart.items.some(item =>
             item.menuItemId.equals(menuItemId),
@@ -222,7 +256,7 @@ async function removeCartItem(req, res, next) {
         await cart.save()
 
         return res.status(200).json({
-            cart: await publicCart(cart),
+            cart: await buildCartResponse(cart),
         })
     } catch (error) {
         next(error)
@@ -231,14 +265,22 @@ async function removeCartItem(req, res, next) {
 
 async function clearCart(req, res, next) {
     try {
-        const cart = await findOrCreateCart(req.user._id)
+        const cart = await Cart.findOne({
+            userId: req.user._id,
+        })
+
+        if (!cart) {
+            return res.status(200).json({
+                cart: [],
+            })
+        }
 
         cart.items = []
 
         await cart.save()
 
         return res.status(200).json({
-            cart: await publicCart(cart),
+            cart: [],
         })
     } catch (error) {
         next(error)
