@@ -6,6 +6,8 @@ const mongoose = require('mongoose')
 const cookieParser = require('cookie-parser')
 const authRoutes = require('./routes/authRoutes')
 const reservationsRoutes = require('./routes/reservationsRoutes')
+const cartRoutes = require('./routes/cartRoutes')
+const ordersRoutes = require('./routes/ordersRoutes')
 const checkOrigin = require('./middlewares/checkOrigin')
 const {
     notFound,
@@ -36,6 +38,8 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/auth', authRoutes)
 app.use('/api/reservations', reservationsRoutes)
+app.use('/api/cart', cartRoutes)
+app.use('/api/orders', ordersRoutes)
 app.use(notFound)
 app.use(errorHandler)
 
