@@ -82,37 +82,39 @@ async function createOrder(req, res, next) {
             })
         }
 
-        const cart = await Cart.findOne({
-            userId: req.user._id,
-        })
+        const order = await mongoose.connection.transaction(async session => {
+            const cart = await Cart.findOne({
+                userId: req.user._id,
+            }).session(session)
 
-        if (!cart || cart.items.length === 0) {
-            return res.status(400).json({
-                message: 'Your cart is empty.',
-            })
-        }
-
-        const dishes = await MenuItem.find({
-            _id: { $in: cart.items.map(item => item.menuItemId) },
-        })
-
-        const items = []
-
-        for (const cartItem of cart.items) {
-            const dish = dishes.find(menuItem =>
-                menuItem._id.equals(cartItem.menuItemId),
-            )
-
-            if (!dish || !dish.isAvailable) {
-                return res.status(400).json({
-                    message: 'Some items are no longer available. Remove them before checkout.',
-                })
+            if (!cart || cart.items.length === 0) {
+                const error = new Error('Your cart is empty.')
+                error.status = 400
+                throw error
             }
 
-            items.push(purchasedItem(dish, cartItem.quantity))
-        }
+            const dishes = await MenuItem.find({
+                _id: { $in: cart.items.map(item => item.menuItemId) },
+            }).session(session)
 
-        const order = await mongoose.connection.transaction(async session => {
+            const items = []
+
+            for (const cartItem of cart.items) {
+                const dish = dishes.find(menuItem =>
+                    menuItem._id.equals(cartItem.menuItemId),
+                )
+
+                if (!dish || !dish.isAvailable) {
+                    const error = new Error(
+                        'Some items are no longer available. Remove them before checkout.',
+                    )
+                    error.status = 400
+                    throw error
+                }
+
+                items.push(purchasedItem(dish, cartItem.quantity))
+            }
+
             const [createdOrder] = await Order.create(
                 [
                     {
@@ -130,7 +132,6 @@ async function createOrder(req, res, next) {
             )
 
             cart.items = []
-
             await cart.save({ session })
 
             return createdOrder
@@ -140,6 +141,12 @@ async function createOrder(req, res, next) {
             order: buildOrderResponse(order),
         })
     } catch (error) {
+        if (error.status === 400) {
+            return res.status(400).json({
+                message: error.message,
+            })
+        }
+
         next(error)
     }
 }

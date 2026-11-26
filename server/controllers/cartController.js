@@ -15,9 +15,7 @@ function isValidQuantity(quantity, min) {
 async function upsertCart(userId) {
     try {
         return await Cart.findOneAndUpdate(
-            {
-                userId,
-            },
+            { userId },
             {
                 $setOnInsert: {
                     items: [],
@@ -30,9 +28,11 @@ async function upsertCart(userId) {
         )
     } catch (error) {
         if (error.code === 11000) {
-            return Cart.findOne({
-                userId,
-            })
+            const cart = await Cart.findOne({ userId })
+
+            if (cart) {
+                return cart
+            }
         }
 
         throw error
@@ -268,15 +268,13 @@ async function clearCart(req, res, next) {
         const cart = await Cart.findOne({
             userId: req.user._id,
         })
-
-        if (!cart) {
+        if (!cart || cart.items.length === 0) {
             return res.status(200).json({
                 cart: [],
             })
         }
 
         cart.items = []
-
         await cart.save()
 
         return res.status(200).json({
