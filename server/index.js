@@ -1,13 +1,14 @@
 require('dotenv').config()
-
 const express = require('express')
 const cors = require('cors')
 const mongoose = require('mongoose')
 const cookieParser = require('cookie-parser')
 const authRoutes = require('./routes/authRoutes')
 const reservationsRoutes = require('./routes/reservationsRoutes')
+const usersRoutes = require('./routes/usersRoutes')
 const cartRoutes = require('./routes/cartRoutes')
 const ordersRoutes = require('./routes/ordersRoutes')
+const menuRoutes = require('./routes/menuRoutes')
 const checkOrigin = require('./middlewares/checkOrigin')
 const {
     notFound,
@@ -27,6 +28,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(checkOrigin)
 
+
 app.get('/api/health', (req, res) => {
     const databaseConnected = mongoose.connection.readyState === 1
 
@@ -38,8 +40,11 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/auth', authRoutes)
 app.use('/api/reservations', reservationsRoutes)
+app.use('/api/menu', menuRoutes)
+app.use('/api/users', usersRoutes)
 app.use('/api/cart', cartRoutes)
 app.use('/api/orders', ordersRoutes)
+
 app.use(notFound)
 app.use(errorHandler)
 
