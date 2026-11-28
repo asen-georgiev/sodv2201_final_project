@@ -17,7 +17,6 @@ const router = express.Router()
 
 router.get('/', getMenuItems)
 router.get('/:id', getMenuItemById)
-
 router.post('/', requireAuth, requireAdmin, createMenuItem)
 router.patch('/:id', requireAuth, requireAdmin, updateMenuItem)
 router.delete('/:id', requireAuth, requireAdmin, deleteMenuItem)

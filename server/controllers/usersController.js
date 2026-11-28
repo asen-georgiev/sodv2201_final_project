@@ -13,7 +13,7 @@ function buildUserResponse(user) {
 
 async function getAllUsers(req, res, next) {
     try {
-        const users = await User.find()
+        const users = await User.find().exec()
 
         return res.status(200).json({
             users: users.map(buildUserResponse),
